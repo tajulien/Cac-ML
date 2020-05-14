@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<style>
+.dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropbtn:hover, .dropbtn:focus {
+  background-color: #3e8e41;
+}
+
+#myInput {
+  box-sizing: border-box;
+  background-image: url('searchicon.png');
+  background-position: 14px 12px;
+  background-repeat: no-repeat;
+  font-size: 16px;
+  padding: 14px 20px 12px 45px;
+  border: none;
+  border-bottom: 1px solid #ddd;
+}
+
+#myInput:focus {outline: 3px solid #ddd;}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f6f6f6;
+  min-width: 230px;
+  overflow: auto;
+  border: 1px solid #ddd;
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown a:hover {background-color: #ddd;}
+
+.show {display: block;}
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript">
+var url = window.location.href.split('=')[2];
+
+</script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="http://82.64.150.143:3305/phpmyadmin/bar.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-trendline@0.1.3/src/chartjs-plugin-trendline.min.js" ></script>
+</head>
+<body class="bg-dark" text="white">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <h1 class="text-white"> CAC 40 - Visualisation </h1>
+                <h1> {{page_label}} </h1>
+                <a href="{% url 'home' days_range=7 name_action=name_action %}" class="btn {% if page_label == 'Semaine' %}btn-info{% else %}btn-secondary{% endif %}">Semaine</a>
+                <a href="{% url 'home' days_range=30 name_action=name_action %}" class="btn {% if page_label == 'Mois' %}btn-info{% else %}btn-secondary{% endif %}">Mois</a>
+                <a href="{% url 'home' days_range=365 name_action=name_action %}" class="btn {% if page_label == 'Année' %}btn-info{% else %}btn-secondary{% endif %}">Année</a>
+                <a href="{% url 'home' days_range=nb_jour name_action=name_action %}" class="btn {% if page_label == 'Max' %}btn-info{% else %}btn-secondary{% endif %}">Max</a>
+                <input id="clickMe" class="btn-info" type="button" value="Hide/Show All" onclick="handleClick();" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-6 col-12 col-md-8 bg-dark">
+                <canvas id="chart-{{ title }}"></canvas>
+            </div>
+     <!--   <div class="dropdown">
+  <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+  <div id="myDropdown" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+    <a href="#about">About</a>
+    <a href="#base">Base</a>
+    <a href="#blog">Blog</a>
+    <a href="#contact">Contact</a>
+    <a href="#custom">Custom</a>
+    <a href="#support">Support</a>
+    <a href="#tools">Tools</a>
+  </div>
+-->
+
+<div class="dropdown">
+    <select id="menu">
+    <!--<option value=""> Please Choose...</option> -->
+        <option value="Accor Hotels">Accor Hotels</option>
+        <option value="Air Liquide">Air Liquide</option>
+        <option value="Airbus">Airbus</option>
+        <option value="Arcelor Mittal">Arcelor Mittal</option>
+        <option value="Atos">Atos</option>
+        <option value="Axa">Axa</option>
+        <option value="Bnp Paribas">Bnp Paribas</option>
+        <option value="Bouygues">Bouygues</option>
+        <option value="CapGemini">CapGemini</option>
+        <option value="Carrefour">Carrefour</option>
+        <option value="Credit Agricole">Credit Agricole</option>
+        <option value="Danone">Danone</option>
+        <option value="Dassault Systemes">Dassault Systemes</option>
+        <option value="Engie">Engie</option>
+        <option value="EssilorLuxottica">EssilorLuxottica</option>
+        <option value="Hermes">Hermes</option>
+        <option value="Kering">Kering</option>
+        <option value="L'oreal">L'oreal</option>
+        <option value="Legrand SA">Legrand SA</option>
+        <option value="Lvmh">Lvmh</option>
+        <option value="Michelin">Michelin</option>
+        <option value="Orange">Orange</option>
+        <option value="Pernod Ricard">Pernod Ricard</option>
+        <option value="Peugeot">Peugeot</option>
+        <option value="Publicis Groupe">Publicis Groupe</option>
+        <option value="Renault">Renault</option>
+        <option value="Safran">Safran</option>
+        <option value="Saint Gobain">Saint Gobain</option>
+        <option value="Sanofi">Sanofi</option>
+        <option value="Schneider Electric">Schneider Electric</option>
+        <option value="Societe Generale">Societe Generale</option>
+        <option value="Sodexo">Sodexo</option>
+        <option value="Stmicroelectronics">Stmicroelectronics</option>
+        <option value="TechnipFMC">TechnipFMC</option>
+        <option value="Thales">Thales</option>
+        <option value="Total">Total</option>
+        <option value="Unibail Rodamco Wes">Unibail Rodamco Wes</option>
+        <option value="Veolia Environ.">Veolia Environ.</option>
+        <option value="Vinci">Vinci</option>
+        <option value="Vivendi">Vivendi</option>
+        <option value="Worldline">Worldline</option>
+    </select>
+    <button id="go" onclick="gotosite()">Go</button>
+    </div>
+</div>
+
+<div class="value" style="text-align:center; color:white" id='t2'> </div>
+  <input type="range" min="1" max="1000" value=0 class="slider" id="myRange">
+</div>
+    <script>
+        var ctx = document.getElementById("chart-{{ title }}");
+        var chartInstance = new Chart(ctx, {
+  type: 'line',
+  spanGaps: false,
+  data: {
+        labels: {{ days_labels|safe }},
+    datasets: [{
+        data: {{ data|safe }},
+        label: "Cours",
+        borderColor: "#3e95cd",
+        backgroundColor: "#7bb6dd",
+        fill: false,
+        pointRadius: 2  ,
+        //  pointBackgroundColor: true
+      }, {
+        data: {{ mma10|safe }},
+        label: "mma10",
+        borderColor: "#8e5ea2",
+        fill: false,
+        borderWidth: "1",
+        pointRadius: 0
+      }, {
+        data: {{ mma20|safe }},
+        label: "mma20",
+        borderColor: "#3cba9f",
+        fill: false,
+        borderWidth: "1",
+        pointRadius: 0
+      }, {
+        data: {{ mma50|safe }},
+        label: "mma50",
+        borderColor: "#e8d9b3",
+        fill: false,
+        borderWidth: "1",
+        pointRadius: 0
+      }, {
+        data: {{ mma100|safe }},
+        label: "mma100",
+        borderColor: "#d3a39",
+        fill: false,
+        borderWidth: "1",
+        pointRadius: 0
+      }, {
+        data: {{ mma200|safe }},
+        label: "mma200",
+        borderColor: "#a840d9",
+        fill: false,
+        borderWidth: "1",
+        pointRadius: 0
+
+      }, {
+        data: {{ bol_inf|safe }},
+        label: "bol_inf",
+        borderColor: "#a8cad9",
+        pointRadius: 0,
+        borderWidth: "2",
+        //backgroundColor: utils.transparentize(presets.orange),
+        fill: '+1'
+
+     }, {
+        data: {{ bol_sup|safe }},
+        label: "bol_sup",
+        borderColor: "#ca40d9",
+        fill: '-1',
+        borderWidth: "2",
+        pointRadius: 0
+
+
+      }
+    ]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Evolution du cours avec indicateurs'
+    },
+    scales: {
+        yAxes: [{
+            ticks: {
+                min: 0,
+                }
+            }]
+        }
+    }
+});
+
+document.getElementById("clickMe").onclick = function handleClick() {
+  chartInstance.data.datasets.forEach(function(ds) {
+    ds.hidden = !ds.hidden;
+  });
+  chartInstance.update();
+}
+
+
+    </script>
+
+<script type="text/javascript">
+var x = document.getElementById("menu").selectedIndex;
+
+
+// Range bar days
+var elem = document.querySelector('#myRange');
+var rangeValue = function(){
+  var newValue = elem.value;
+  var target = document.querySelector('.value');
+  target.innerHTML = newValue;
+
+}
+
+elem.addEventListener("input", rangeValue);
+
+var pathname = window.location.search
+$(function(){
+      $("#myRange").change(function(){
+        debugger;
+        window.location=window.location.href.split('=')[0] + "=" + this.value + "&nom_action=" + url
+      });
+    });
+var target2 = window.location.href.split('=')[1];
+document.getElementById('t2').innerHTML = target2.slice(0,-11)
+var number = window.location.href.split('=')[1];
+document.getElementById('myRange').value =target2.slice(0,-11);
+
+
+// Dropdown menu bouton
+
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function filterFunction() {
+  var input, filter, ul, li, a, i;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("myDropdown");
+  a = div.getElementsByTagName("a");
+  for (i = 0; i < a.length; i++) {
+    txtValue = a[i].textContent || a[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
+  }
+}
+
+function gotosite() {
+  var days = window.location.href.split('=')[1];
+  days = days.substring(0, days.indexOf('&'));
+  window.location = window.location=window.location.href.split('=')[0] + "=" + days + "&nom_action=" +  document.getElementById("menu").value;
+}
+</script>
+</body>
+</html>
